@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f5f7">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>클릭 카운터 웹 앱</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f5f7;
+      --ink: #1d1d1f;
+      --muted: #86868b;
+      --blue: #0071e3;
+      --line: rgba(0, 0, 0, .07);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 26px 18px;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(ellipse at 50% -15%, #fff, #f5f5f7 65%);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button {
+      font: inherit;
+      border: 0;
+      cursor: pointer;
+      transition: transform .14s, background .18s;
+    }
+
+    button:active {
+      transform: scale(.97);
+    }
+
+    button:focus-visible {
+      outline: 3px solid #0071e355;
+      outline-offset: 3px;
+    }
+
+    .app {
+      width: min(100%, 460px);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 5px 22px;
+    }
+
+    .wordmark {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
+    .note {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, .8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid #ffffff;
+      border-radius: 30px;
+      padding: 30px;
+      box-shadow: 0 18px 55px #00000012;
+    }
+
+    .label {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .number {
+      text-align: center;
+      margin: 18px 0 2px;
+      font-size: clamp(82px, 20vw, 116px);
+      line-height: 1.02;
+      font-weight: 650;
+      letter-spacing: -.075em;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+
+    .unit {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin: 8px 0 28px;
+    }
+
+    .primary {
+      width: 100%;
+      height: 66px;
+      border-radius: 17px;
+      background: var(--blue);
+      color: white;
+      font-size: 17px;
+      font-weight: 650;
+      box-shadow: 0 7px 18px #0071e330;
+    }
+
+    .primary:hover {
+      background: #0077ed;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+      margin-top: 12px;
+    }
+
+    .secondary {
+      height: 54px;
+      border-radius: 15px;
+      background: #f0f0f2;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .secondary:hover, .stepper button:hover {
+      background: #e7e7ea;
+    }
+
+    .step-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 25px;
+      padding-top: 21px;
+      border-top: 1px solid var(--line);
+    }
+
+    .step-label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .stepper button {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #f0f0f2;
+      color: var(--ink);
+      font-size: 18px;
+    }
+
+    .step-value {
+      min-width: 20px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 5px 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .clear {
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      padding: 5px;
+    }
+
+    .clear:hover {
+      color: var(--ink);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translate(-50%, 12px);
+      opacity: 0;
+      background: #1d1d1f;
+      color: white;
+      padding: 11px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      transition: .2s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 420px) {
+      .card {
+        padding: 24px 20px;
+        border-radius: 25px;
+      }
+      .header {
+        margin-bottom: 17px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="wordmark">Counter</div>
+      <div class="note">Simple by design</div>
+    </header>
+
+    <section class="card" aria-label="클릭 카운터">
+      <div class="label">현재 카운트</div>
+      <div class="number" id="count" aria-live="polite">0</div>
+      <div class="unit">회</div>
+      
+      <button class="primary" id="add">+ 카운트</button>
+      
+      <div class="actions">
+        <button class="secondary" id="minus">−</button>
+        <button class="secondary" id="reset">초기화</button>
+      </div>
+
+      <div class="step-row">
+        <div class="step-label">한 번에 변경할 숫자</div>
+        <div class="stepper">
+          <button id="stepDown" aria-label="단위 감소">−</button>
+          <span class="step-value" id="step">1</span>
+          <button id="stepUp" aria-label="단위 증가">+</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span id="saved">자동 저장 · 이 기기에 저장</span>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const KEY = "apple-style-counter-v1";
+      let state = { count: 0, step: 1 };
+
+      try {
+        state = { ...state, ...JSON.parse(localStorage.getItem(KEY) || "{}") };
+      } catch {}
+
+      state.count = Number.isFinite(state.count) ? Math.max(0, Math.floor(state.count)) : 0;
+      state.step = Number.isFinite(state.step) ? Math.min(999, Math.max(1, Math.floor(state.step))) : 1;
+
+      const $ = id => document.getElementById(id);
+      let timer;
+
+      function render() {
+        $("count").textContent = state.count.toLocaleString("ko-KR");
+        $("step").textContent = state.step.toLocaleString("ko-KR");
+        $("minus").disabled = state.count === 0;
+        $("minus").style.opacity = state.count === 0 ? ".45" : "1";
+
+        try {
+          localStorage.setItem(KEY, JSON.stringify(state));
+          $("saved").textContent = "자동 저장됨 · 이 기기에 저장";
+        } catch {
+          $("saved").textContent = "브라우저 저장을 사용할 수 없음";
+        }
+      }
+
+      function toast(msg) {
+        $("toast").textContent = msg;
+        $("toast").classList.add("show");
+        clearTimeout(timer);
+        timer = setTimeout(() => $("toast").classList.remove("show"), 1700);
+      }
+
+      $("add").onclick = () => {
+        state.count += state.step;
+        render();
+      };
+
+      $("minus").onclick = () => {
+        state.count = Math.max(0, state.count - state.step);
+        render();
+      };
+
+      $("reset").onclick = () => {
+        if (!state.count) return toast("이미 0이에요.");
+        state.count = 0;
+        render();
+        toast("카운터를 초기화했어요.");
+      };
+
+      $("stepDown").onclick = () => {
+        state.step = Math.max(1, state.step - 1);
+        render();
+      };
+
+      $("stepUp").onclick = () => {
+        state.step = Math.min(999, state.step + 1);
+        render();
+      };
+
+      document.addEventListener("keydown", e => {
+        if (e.code === "Space" && !["BUTTON", "INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+          e.preventDefault();
+          state.count += state.step;
+          render();
+        }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
